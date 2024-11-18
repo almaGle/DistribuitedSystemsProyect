@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: soap-api
+  namespace: team-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: soap-api
+  template:
+    metadata:
+      labels:
+        app: soap-api
+    spec:
+      containers:
+      - name: soap-api
+        image: <tu-imagen-de-soap>
+        ports:
+        - containerPort: 8001
