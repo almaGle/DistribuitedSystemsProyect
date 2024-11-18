@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rest-api
+  namespace: team-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rest-api
+  template:
+    metadata:
+      labels:
+        app: rest-api
+    spec:
+      containers:
+      - name: rest-api
+        image: <tu-imagen-de-rest>
+        ports:
+        - containerPort: 3000
+        env:
+        - name: SOAP_URL
+          value: "http://soap-api-service.team-api.svc.cluster.local/wsdl"
