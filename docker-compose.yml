@@ -1,0 +1,88 @@
+version: "3.9"
+services:
+  # API REST
+  api-rest:
+    build:
+      context: ./api-rest
+      dockerfile: Dockerfile
+    container_name: api-rest
+    environment:
+      MYSQL_HOST: mysql
+      MYSQL_PORT: 3306
+      MYSQL_USER: root
+      MYSQL_PASSWORD: root_password
+      MYSQL_DATABASE: restdatabase
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+    ports:
+      - "4000:4000" # Puerto externo:interno
+    depends_on:
+      - mysql
+      - redis
+    networks:
+      - app-network
+
+  # API SOAP
+  api-soap:
+    build:
+      context: ./api-soap
+      dockerfile: Dockerfile
+    container_name: api-soap
+    environment:
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_USER: postgres_user
+      POSTGRES_PASSWORD: postgres_password
+      POSTGRES_DB: soapdatabase
+    ports:
+      - "5000:5000" # Puerto externo:interno
+    depends_on:
+      - postgres
+    networks:
+      - app-network
+
+  # Base de datos MySQL (para API REST)
+  mysql:
+    image: mysql:8.0
+    container_name: mysql-container
+    environment:
+      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_DATABASE: restdatabase
+    ports:
+      - "3307:3306" # Puerto externo:interno
+    volumes:
+      - ./mysql-data:/var/lib/mysql # Persistencia
+      - ./init-scripts/mysql-init.sql:/docker-entrypoint-initdb.d/init.sql # Script de inicialización
+    networks:
+      - app-network
+
+  # Base de datos PostgreSQL (para API SOAP)
+  postgres:
+    image: postgres:15
+    container_name: postgres-container
+    environment:
+      POSTGRES_USER: postgres_user
+      POSTGRES_PASSWORD: postgres_password
+      POSTGRES_DB: soapdatabase
+    ports:
+      - "5433:5432" # Puerto externo:interno
+    volumes:
+      - ./postgres-data:/var/lib/postgresql/data # Persistencia
+      - ./init-scripts/postgres-init.sql:/docker-entrypoint-initdb.d/init.sql # Script de inicialización
+    networks:
+      - app-network
+
+  # Redis (para API REST)
+  redis:
+    image: redis:alpine
+    container_name: redis-container
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./redis-data:/data
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge

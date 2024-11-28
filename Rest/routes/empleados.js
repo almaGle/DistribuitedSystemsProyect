@@ -2,9 +2,12 @@ const express = require('express');
 const empleado = express.Router();
 const db = require('../config/database');
 const redis = require('redis');
+const soap = require('soap');
 
 
 module.exports = (client) => {
+    
+
     /**
      * @swagger
      * /empleados:

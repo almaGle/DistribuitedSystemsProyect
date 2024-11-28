@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: rest-api-config
+  namespace: rest-api-namespace
+data:
+  environment: production

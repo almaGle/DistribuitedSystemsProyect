@@ -4,7 +4,7 @@ const express = require('express');
 const { swaggerUi, swaggerDocs } = require('./config/swagger');
 const redis = require('redis');
 const soap = require('soap'); // SOAP
-
+require('dotnev').config();
 // Routers
 const empleados = require('./routes/empleados');
 
@@ -42,8 +42,25 @@ client.on('error', (err) => {
 app.get("/", welcome);
 
 // **Integración con la API SOAP**
-const soapUrl = process.env.SOAP_URL || 'http://soap-api-service.team-api.svc.cluster.local/wsdl';
+const soapUrl = process.env.SOAP_URL //|| 'http://soap-api-service.team-api.svc.cluster.local/wsdl';
+// **Endpoint REST para obtener un recurso por ID**
+app.get('/api/resource/:id', async (req, res) => {
+    const { id } = req.params;
 
+    try {
+        // Crear un cliente SOAP
+        const client = await soap.createClientAsync(SOAP_URL);
+
+        // Llamar al método de obtención en la API SOAP
+        const [response] = await client.GetResourceByIdAsync({ id: parseInt(id, 10) });
+
+        // Responder al cliente REST
+        res.status(200).json({ data: response.GetResourceByIdResult });
+    } catch (error) {
+        console.error('Error al conectar con la API SOAP:', error);
+        res.status(500).json({ error: 'Error al obtener el recurso en SOAP.' });
+    }
+});
 // Rutas de empleados, pasamos el cliente de Redis como argumento
 app.use("/empleados", empleados(client, soapUrl));
 

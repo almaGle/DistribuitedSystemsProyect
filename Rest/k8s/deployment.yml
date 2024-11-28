@@ -2,9 +2,9 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: rest-api
-  namespace: team-api
+  namespace: rest-api-namespace
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       app: rest-api
@@ -15,9 +15,12 @@ spec:
     spec:
       containers:
       - name: rest-api
-        image: <tu-imagen-de-rest>
+        image: your-docker-hub/rest-api:latest
         ports:
-        - containerPort: 3000
+        - containerPort: 4000
         env:
         - name: SOAP_URL
-          value: "http://soap-api-service.team-api.svc.cluster.local/wsdl"
+          valueFrom:
+            secretKeyRef:
+              name: soap-credentials
+              key: soap-url
