@@ -2,7 +2,7 @@ apiVersion: v1
 kind: PersistentVolume
 metadata:
   name: mysql-pv
-  namespace: rest-api-namespace
+  namespace: ACGE-api
 spec:
   capacity:
     storage: 5Gi
@@ -15,7 +15,7 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: mysql-pvc
-  namespace: rest-api-namespace
+  namespace: ACGE-api
 spec:
   accessModes:
     - ReadWriteOnce

@@ -1,0 +1,4 @@
+spyne
+psycopg2
+requests
+lxml

@@ -15,12 +15,14 @@
   "author": "Alma González",
   "license": "ISC",
   "dependencies": {
+    "dotenv": "^16.4.5",
     "express": "^4.18.2",
     "jsonwebtoken": "^9.0.2",
     "morgan": "^1.10.0",
     "mysql": "^2.18.1",
     "nodemon": "^3.0.1",
     "redis": "^4.0.0",
+    "soap": "1.1.6",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^4.6.3"
   }
