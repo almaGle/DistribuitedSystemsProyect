@@ -15,12 +15,28 @@ spec:
     spec:
       containers:
       - name: soap-api
-        image: your-docker-hub/soap-api:latest
+        image: soap-api:1  # Simplificado para la versión 1 local
         ports:
-        - containerPort: 80
+        - containerPort: 5000
         env:
-        - name: REST_API_URL
+        - name: POSTGRES_HOST
+          value: postgres-service.lfbt-api.svc.cluster.local
+        - name: POSTGRES_PORT
+          value: "5432"
+        - name: POSTGRES_USER
           valueFrom:
-            configMapKeyRef:
-              name: soap-api-config
-              key: REST_API_URL
+            secretKeyRef:
+              name: postgres-secret
+              key: postgres-user
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: postgres-secret
+              key: postgres-password
+        - name: POSTGRES_DB
+          valueFrom:
+            secretKeyRef:
+              name: postgres-secret
+              key: postgres-database
+        - name: REST_API_URL
+          value: http://rest-api-service.acge-api.svc.cluster.local:4000

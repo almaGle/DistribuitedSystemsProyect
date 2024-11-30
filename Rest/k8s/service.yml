@@ -1,14 +1,13 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: mysql-service
+  name: rest-api-service
   namespace: ACGE-api
 spec:
-  type: ClusterIP
+  type: NodePort  # Cambiar de ClusterIP a NodePort
   ports:
-  - port: 3306
-    targetPort: 3306
+  - port: 4000  # Puerto dentro del clúster
+    targetPort: 4000  # Puerto en el contenedor
+    nodePort: 30001  # Puerto expuesto externamente (puede variar)
   selector:
-    app: mysql
-  
-  
+    app: rest-api

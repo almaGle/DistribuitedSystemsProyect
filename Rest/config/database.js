@@ -3,18 +3,18 @@ const util = require('util')
 
 const pool = mysql.createPool({
     connectionLimit: 10,
-    host: 'mysql-container',
-    port: 3310,
-    user: 'root',
-    password: 'root_password',
-    database: 'rrhh',
-    connectTimeout: 30000,     // Aumentar tiempo de conexión
-    acquireTimeout: 30000,     // Aumentar tiempo para adquirir la conexión
+    host: process.env.MYSQL_HOST || 'mysql', // Usa una variable de entorno o 'mysql' como valor por defecto
+    port: process.env.MYSQL_PORT || 3306,
+    user: process.env.MYSQL_USER || 'root',
+    password: process.env.MYSQL_PASSWORD || 'root_password',
+    database: process.env.MYSQL_DATABASE || 'rrhh',
+    connectTimeout: 30000,
+    acquireTimeout: 30000,
     waitForConnections: true
-})
+});
 
-pool.query = util.promisify(pool.query)
-module.exports = pool
+pool.query = util.promisify(pool.query);
+module.exports = pool;
 
 pool.getConnection((err, connection) => {
     if (err) {
@@ -24,5 +24,6 @@ pool.getConnection((err, connection) => {
         connection.release();
     }
 });
+
 
 

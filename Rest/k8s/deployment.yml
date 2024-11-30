@@ -15,12 +15,32 @@ spec:
     spec:
       containers:
       - name: rest-api
-        image: your-docker-hub/rest-api:latest
+        image: rest-api:1  # Simplificado para la versión 1 local
         ports:
         - containerPort: 4000
         env:
-        - name: SOAP_URL
+        - name: MYSQL_HOST
+          value: mysql-service.acge-api.svc.cluster.local
+        - name: MYSQL_PORT
+          value: "3306"
+        - name: MYSQL_USER
           valueFrom:
             secretKeyRef:
-              name: soap-credentials
-              key: soap-url
+              name: mysql-secret
+              key: mysql-user
+        - name: MYSQL_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mysql-secret
+              key: mysql-password
+        - name: MYSQL_DATABASE
+          valueFrom:
+            secretKeyRef:
+              name: mysql-secret
+              key: mysql-database
+        - name: REDIS_HOST
+          value: redis.acge-api.svc.cluster.local
+        - name: REDIS_PORT
+          value: "6379"
+        - name: SOAP_URL
+          value: http://soap-service.lfbt-api.svc.cluster.local:5000

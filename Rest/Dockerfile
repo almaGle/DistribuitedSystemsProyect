@@ -9,6 +9,8 @@ COPY package*.json ./
 
 # Instalar dependencias
 RUN npm install
+RUN apt-get update && apt-get install -y default-mysql-client
+
 
 # Copiar el código de la API
 COPY . .

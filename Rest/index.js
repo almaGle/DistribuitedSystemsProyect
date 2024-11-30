@@ -28,7 +28,9 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Crear cliente de Redis
-const client = redis.createClient({ url: 'redis://redis:6379' });
+const client = redis.createClient({
+    url: `redis://${process.env.REDIS_HOST || 'redis'}:${process.env.REDIS_PORT || '6379'}`
+});
 
 client.on('error', (err) => {
     console.error('Redis error: ', err);
@@ -43,7 +45,7 @@ client.on('error', (err) => {
 app.get("/", welcome);
 
 // **Integración con la API SOAP**
-const soapUrl = process.env.SOAP_URL //|| 'http://soap-api-service.team-api.svc.cluster.local/wsdl';
+const soapUrl = process.env.SOAP_URL || 'http://soap-service.lfbt-api.svc.cluster.local/wsdl';
 // **Endpoint REST para obtener un recurso por ID**
 app.get('/api/resource/:id', async (req, res) => {
     const { id } = req.params;

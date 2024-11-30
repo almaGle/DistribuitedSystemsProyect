@@ -3,6 +3,8 @@ const empleado = express.Router();
 const db = require('../config/database');
 const redis = require('redis');
 const soap = require('soap');
+const { createTaskInSoap } = require('../rest_client');
+const { listTasksFromSoap } = require('../rest_client');
 
 
 module.exports = (client) => {
@@ -44,24 +46,36 @@ module.exports = (client) => {
      *       500:
      *         description: Ocurrió un error.
      */
-    empleado.post('/', async (req, res, next) => {
+
+
+    empleado.post('/', async (req, res) => {
         const { Nombres, Apellidos, Telefono, Email, Direccion } = req.body;
         if (Nombres && Apellidos && Telefono && Email && Direccion) {
-            let query = "INSERT INTO empleado (Nombres, Apellidos, Telefono, Email, Direccion) ";
-            query += "VALUES (?, ?, ?, ?, ?)";
-
-            const rows = await db.query(query, [Nombres, Apellidos, Telefono, Email, Direccion]);
-            console.log(rows);
-
-            if (rows.affectedRows == 1) {
-               
-                await client.del('empleados');
-                return res.status(201).json({ code: 201, message: "Empleado insertado correctamente" });
+            let query = "INSERT INTO empleado (Nombres, Apellidos, Telefono, Email, Direccion) VALUES (?, ?, ?, ?, ?)";
+            const result = await db.query(query, [Nombres, Apellidos, Telefono, Email, Direccion]);
+    
+            if (result.affectedRows === 1) {
+                const IDEmpleado = result.insertId;
+    
+                // Crear tarea inicial en la API SOAP
+                try {
+                    const taskResponse = await createTaskInSoap(
+                        `Bienvenida ${Nombres}`,
+                        "Completar los pasos iniciales del onboarding",
+                        IDEmpleado
+                    );
+                    console.log('Tarea creada en SOAP:', taskResponse);
+                } catch (error) {
+                    console.error('Error al crear tarea en SOAP:', error);
+                }
+    
+                return res.status(201).json({ message: "Empleado y tarea inicial creados." });
             }
-            return res.status(500).json({ code: 500, message: "Ocurrió un error" });
+            return res.status(500).json({ message: "Error al insertar empleado." });
         }
-        return res.status(400).json({ code: 400, message: "Campos incompletos" });
+        return res.status(400).json({ message: "Campos incompletos." });
     });
+    
 
     /**
      * @swagger
@@ -306,25 +320,15 @@ module.exports = (client) => {
      *       500:
      *         description: Error en la base de datos.
      */
-    empleado.get('/:id([0-9]{1,3})', async (req, res, next) => {
-        const id = req.params.id;
-
+    empleado.get('/:id/tasks', async (req, res) => {
+        const IDEmpleado = req.params.id;
         try {
-            const cacheEmpleado = await client.get(`empleado:${id}`);
-            if (cacheEmpleado) {
-                return res.status(200).json({ code: 200, message: JSON.parse(cacheEmpleado) });
-            }
-
-            const empleadoID = await db.query("SELECT * FROM empleado WHERE IDEmpleado = ?", [id]);
-
-            if (empleadoID.length > 0) {
-                await client.set(`empleado:${id}`, JSON.stringify(empleadoID), { EX: 60 });
-                return res.status(200).json({ code: 200, message: empleadoID });
-            }
-            return res.status(404).json({ code: 404, message: "Empleado no encontrado" });
+            const tasks = await listTasksFromSoap();
+            const employeeTasks = tasks.filter(task => task.assigned_to === IDEmpleado);
+            return res.status(200).json(employeeTasks);
         } catch (error) {
-            console.error('Error al obtener empleado:', error);
-            return res.status(500).json({ code: 500, message: "Error en la base de datos" });
+            console.error('Error al obtener tareas de SOAP:', error);
+            return res.status(500).json({ message: "Error al obtener tareas del empleado." });
         }
     });
 

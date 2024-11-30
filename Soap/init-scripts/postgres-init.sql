@@ -1,6 +1,6 @@
 CREATE TABLE tasks (
     id SERIAL PRIMARY KEY,
-    title VARCHAR(255),
-    description TEXT,
-    assigned_to INT
+    title VARCHAR(100) NOT NULL,
+    description TEXT NOT NULL,
+    assigned_to INT NOT NULL
 );
