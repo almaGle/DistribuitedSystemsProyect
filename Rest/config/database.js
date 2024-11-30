@@ -3,10 +3,14 @@ const util = require('util')
 
 const pool = mysql.createPool({
     connectionLimit: 10,
-    host: 'host.docker.internal',
+    host: 'mysql-container',
+    port: 3310,
     user: 'root',
-    password: '',
+    password: 'root_password',
     database: 'rrhh',
+    connectTimeout: 30000,     // Aumentar tiempo de conexión
+    acquireTimeout: 30000,     // Aumentar tiempo para adquirir la conexión
+    waitForConnections: true
 })
 
 pool.query = util.promisify(pool.query)

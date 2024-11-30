@@ -1,7 +1,6 @@
 import psycopg2
 from app.config import Config
 
-
 def get_db_connection():
     return psycopg2.connect(
         host=Config.POSTGRES_HOST,
@@ -10,5 +9,3 @@ def get_db_connection():
         user=Config.POSTGRES_USER,
         password=Config.POSTGRES_PASSWORD,
     )
-
-

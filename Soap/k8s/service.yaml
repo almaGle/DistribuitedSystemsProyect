@@ -10,3 +10,16 @@ spec:
     targetPort: 5432
   selector:
     app: postgres
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: soap-service
+spec:
+  selector:
+    app: soap
+  ports:
+    - protocol: TCP
+      port: 5000
+      targetPort: 5000
+  type: ClusterIP

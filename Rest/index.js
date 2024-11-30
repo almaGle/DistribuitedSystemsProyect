@@ -4,7 +4,8 @@ const express = require('express');
 const { swaggerUi, swaggerDocs } = require('./config/swagger');
 const redis = require('redis');
 const soap = require('soap'); // SOAP
-require('dotnev').config();
+const taskRoutes = require('./routes/task');
+
 // Routers
 const empleados = require('./routes/empleados');
 
@@ -63,6 +64,7 @@ app.get('/api/resource/:id', async (req, res) => {
 });
 // Rutas de empleados, pasamos el cliente de Redis como argumento
 app.use("/empleados", empleados(client, soapUrl));
+app.use('/task', taskRoutes);
 
 // Middleware para rutas no encontradas
 app.use(notFound);

@@ -1,4 +1,5 @@
-version: "3.9"
+version: '3.9'
+
 services:
   # API REST
   api-rest:
@@ -11,11 +12,11 @@ services:
       MYSQL_PORT: 3306
       MYSQL_USER: root
       MYSQL_PASSWORD: root_password
-      MYSQL_DATABASE: restdatabase
+      MYSQL_DATABASE: rrhh
       REDIS_HOST: redis
       REDIS_PORT: 6379
     ports:
-      - "4000:4000" # Puerto externo:interno
+      - "4000:4000"  # Puerto externo:interno
     depends_on:
       - mysql
       - redis
@@ -36,7 +37,7 @@ services:
       POSTGRES_DB: soapdatabase
       REST_API_URL: "http://api-rest:4000"
     ports:
-      - "5000:5000" # Puerto externo:interno
+      - "5000:5000"  # Puerto externo:interno
     depends_on:
       - postgres
     networks:
@@ -48,12 +49,16 @@ services:
     container_name: mysql-container
     environment:
       MYSQL_ROOT_PASSWORD: root_password
-      MYSQL_DATABASE: restdatabase
+      MYSQL_DATABASE: rrhh
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+      MYSQL_ROOT_HOST: '%'
+    command: --default-authentication-plugin=mysql_native_password
     ports:
-      - "3307:3306" # Puerto externo:interno
+      - "3310:3306"  # Puerto externo:interno
     volumes:
-      - ./mysql-data:/var/lib/mysql # Persistencia
-      - ./init-scripts/mysql-init.sql:/docker-entrypoint-initdb.d/init.sql # Script de inicialización
+      - ./mysql-data:/var/lib/mysql  # Persistencia
+      - ./Rest/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
+  # Script de inicialización
     networks:
       - app-network
 
@@ -66,10 +71,10 @@ services:
       POSTGRES_PASSWORD: postgres_password
       POSTGRES_DB: soapdatabase
     ports:
-      - "5433:5432" # Puerto externo:interno
+      - "5433:5432"  # Puerto externo:interno
     volumes:
-      - ./postgres-data:/var/lib/postgresql/data # Persistencia
-      - ./init-scripts/postgres-init.sql:/docker-entrypoint-initdb.d/init.sql # Script de inicialización
+      - ./postgres-data:/var/lib/postgresql/data  # Persistencia
+      - ./init-scripts/postgres-init.sql:/docker-entrypoint-initdb.d/init.sql  # Script de inicialización
     networks:
       - app-network
 
