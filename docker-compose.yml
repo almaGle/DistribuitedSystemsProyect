@@ -18,7 +18,7 @@ services:
       REDIS_PORT: 6379
       SOAP_URL: http://api-soap:5000
     ports:
-      - "4100:4000"  # Puerto externo:interno
+      - "4000:4000"  # Puerto externo:interno
     depends_on:
       - mysql
       - redis
@@ -50,6 +50,7 @@ services:
   mysql:
     image: mysql:8.0
     container_name: mysql-container
+    restart: always
     environment:
       MYSQL_ROOT_PASSWORD: root_password
       MYSQL_DATABASE: rrhh
@@ -57,9 +58,13 @@ services:
       MYSQL_ROOT_HOST: '%'
     command: --default-authentication-plugin=mysql_native_password
     ports:
-      - "3310:3306"  # Puerto externo:interno
+      - "3310:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ./Rest/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d 
     networks:
       - app-network
+
 
   # Base de datos PostgreSQL (para API SOAP)
   postgres:
@@ -70,9 +75,12 @@ services:
       POSTGRES_PASSWORD: postgres_password
       POSTGRES_DB: soapdatabase
     ports:
-      - "5433:5432"  # Puerto externo:interno
+      - "5433:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
     networks:
       - app-network
+
 
   # Redis (para API REST)
   redis:
@@ -86,3 +94,8 @@ services:
 networks:
   app-network:
     driver: bridge
+
+volumes:
+  mysql-data:
+  postgres-data:
+

@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const soap = require('soap');
 const { createTaskInSoap, listTasksFromSoap } = require('../rest_client');
 
 // Ruta para crear una tarea
