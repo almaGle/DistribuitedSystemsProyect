@@ -20,7 +20,6 @@ Este proyecto tiene como objetivo desplegar un conjunto de APIs (REST y SOAP) qu
 - `docker-compose.yml` : Configuración de Docker Compose para levantar todos los servicios (MySQL, Redis, REST API, SOAP API).
 - `Rest/` : Código fuente para la API REST.
 - `Soap/` : Código fuente para la API SOAP.
-- `Kubernetes/` : Archivos YAML para desplegar los servicios en Kubernetes.
 
 ## Instrucciones de Despliegue
 
