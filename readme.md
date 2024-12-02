@@ -29,6 +29,7 @@ Este proyecto tiene como objetivo desplegar un conjunto de APIs (REST y SOAP) qu
 Para levantar todos los servicios usando Docker Compose, sigue estos pasos:
 
 1. **Clona el repositorio**:
+    ```bash
     Entra en la consola desde la carpeta donde se desea clonar el repositorio
     git clone https://github.com/almaGle/DistribuitedSystemsProyect
     cd <directorio-de-donde-se-clonó-el-repositorio>
