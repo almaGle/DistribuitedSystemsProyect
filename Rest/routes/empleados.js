@@ -320,15 +320,25 @@ module.exports = (client) => {
      *       500:
      *         description: Error en la base de datos.
      */
-    empleado.get('/:id/tasks', async (req, res) => {
-        const IDEmpleado = req.params.id;
+    empleado.get('/:id([0-9]{1,3})', async (req, res, next) => {
+        const id = req.params.id;
+
         try {
-            const tasks = await listTasksFromSoap();
-            const employeeTasks = tasks.filter(task => task.assigned_to === IDEmpleado);
-            return res.status(200).json(employeeTasks);
+            const cacheEmpleado = await client.get(`empleado:${id}`);
+            if (cacheEmpleado) {
+                return res.status(200).json({ code: 200, message: JSON.parse(cacheEmpleado) });
+            }
+
+            const empleadoID = await db.query("SELECT * FROM empleado WHERE IDEmpleado = ?", [id]);
+
+            if (empleadoID.length > 0) {
+                await client.set(`empleado:${id}`, JSON.stringify(empleadoID), { EX: 60 });
+                return res.status(200).json({ code: 200, message: empleadoID });
+            }
+            return res.status(404).json({ code: 404, message: "Empleado no encontrado" });
         } catch (error) {
-            console.error('Error al obtener tareas de SOAP:', error);
-            return res.status(500).json({ message: "Error al obtener tareas del empleado." });
+            console.error('Error al obtener empleado:', error);
+            return res.status(500).json({ code: 500, message: "Error en la base de datos" });
         }
     });
 

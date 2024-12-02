@@ -3,7 +3,7 @@ const soap = require('soap');
 const app = express();
 app.use(express.json());
 
-const soapUrl = 'http://localhost:8001/wsdl';
+const soapUrl = 'http://api-soap:5000';
 
 // Endpoint REST para crear un recurso
 app.post('/create', async (req, res) => {

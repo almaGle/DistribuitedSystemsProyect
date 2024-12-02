@@ -1,0 +1,10 @@
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:soap="soap.api">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <soap:create_task>
+         <soap:title>Test Task</soap:title>
+         <soap:description>This is a test task</soap:description>
+         <soap:assigned_to>1</soap:assigned_to>
+      </soap:create_task>
+   </soapenv:Body>
+</soapenv:Envelope>

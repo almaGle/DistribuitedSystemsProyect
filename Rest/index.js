@@ -45,7 +45,7 @@ client.on('error', (err) => {
 app.get("/", welcome);
 
 // **Integración con la API SOAP**
-const soapUrl = process.env.SOAP_URL || 'http://soap-service.lfbt-api.svc.cluster.local/wsdl';
+const soapUrl = process.env.SOAP_URL || 'http://api-soap:5000';
 // **Endpoint REST para obtener un recurso por ID**
 app.get('/api/resource/:id', async (req, res) => {
     const { id } = req.params;

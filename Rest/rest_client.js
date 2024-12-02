@@ -1,15 +1,29 @@
-const axios = require('axios'); // Asegúrate de tener axios instalado (npm install axios)
+const axios = require('axios');
+const xml2js = require('xml2js'); // Para parsear el XML a un objeto JavaScript
 
-// Configuración de la URL base de la API SOAP desde el entorno o valores por defecto
-const SOAP_API_URL = process.env.SOAP_API_URL || "http://soap-service:5000";
+const SOAP_API_URL = process.env.SOAP_API_URL || "http://api-soap:5000";
+
+// Función para parsear XML a JSON
+function parseXmlToJson(xml) {
+    return new Promise((resolve, reject) => {
+        xml2js.parseString(xml, { explicitArray: false }, (err, result) => {
+            if (err) {
+                reject("Error al parsear el XML");
+            } else {
+                resolve(result);
+            }
+        });
+    });
+}
 
 /**
  * Crea una tarea en la API SOAP.
  * @param {string} title - Título de la tarea.
  * @param {string} description - Descripción de la tarea.
  * @param {number} assignedTo - ID del empleado asignado.
- * @returns {Promise<string>} - Respuesta del servicio SOAP.
+ * @returns {Promise<object>} - Respuesta del servicio SOAP en formato JSON.
  */
+// Función para crear tarea en la API SOAP
 async function createTaskInSoap(title, description, assignedTo) {
     const soapRequest = `
         <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:soap="soap.api">
@@ -26,18 +40,21 @@ async function createTaskInSoap(title, description, assignedTo) {
 
     try {
         const response = await axios.post(SOAP_API_URL, soapRequest, {
-            headers: { "Content-Type": "text/xml" },
+            headers: {
+                "Content-Type": "text/xml"
+            }
         });
-        return response.data; // Devuelve la respuesta XML del servicio SOAP
+        // Procesa la respuesta, si es necesario
+        return response.data;  // Devuelve la respuesta SOAP en formato JSON o XML
     } catch (error) {
-        console.error("Error al llamar a la API SOAP:", error.message);
-        throw error; // Lanza el error para que pueda manejarse en el flujo de la API REST
+        console.error("Error al llamar al servicio SOAP:", error.message);
+        throw error;
     }
 }
 
 /**
  * Obtiene la lista de tareas desde la API SOAP.
- * @returns {Promise<string>} - Respuesta del servicio SOAP (lista de tareas).
+ * @returns {Promise<object>} - Lista de tareas en formato JSON.
  */
 async function listTasksFromSoap() {
     const soapRequest = `
@@ -53,12 +70,12 @@ async function listTasksFromSoap() {
         const response = await axios.post(SOAP_API_URL, soapRequest, {
             headers: { "Content-Type": "text/xml" },
         });
-        return response.data; // Devuelve la respuesta XML del servicio SOAP
+        const jsonResponse = await parseXmlToJson(response.data);
+        return jsonResponse; // Devuelve las tareas en formato JSON
     } catch (error) {
         console.error("Error al obtener tareas de la API SOAP:", error.message);
         throw error;
     }
 }
 
-// Exporta las funciones para usarlas en otras partes de tu API REST
 module.exports = { createTaskInSoap, listTasksFromSoap };
