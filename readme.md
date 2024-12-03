@@ -33,7 +33,7 @@ Entra en la consola desde la carpeta donde se desea clonar el repositorio
     ```bash
     
     git clone https://github.com/almaGle/DistribuitedSystemsProyect
-    cd <directorio-de-donde-se-clonó-el-repositorio>
+    cd cd <directorio-de-donde-se-clonó-el-repositorio>
     ```
 
 2. **Construir las imágenes Docker**:
